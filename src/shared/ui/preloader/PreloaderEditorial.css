@@ -1,0 +1,334 @@
+/* «Редакционный» экран загрузки: гротеск + курсивная антиква, одометр, деления, колонны-шторки. */
+
+.pl2 {
+  --pl2-ink: #f2efe8;
+  --pl2-muted: rgba(242, 239, 232, 0.45);
+  --pl2-line: rgba(242, 239, 232, 0.14);
+  --pl2-accent: #c8ff4d;
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  color: var(--pl2-ink);
+  font-family: 'Manrope', system-ui, sans-serif;
+  pointer-events: auto;
+  /* Перерисовки экрана не задевают страницу под ним и наоборот. */
+  contain: layout paint style;
+}
+
+.pl2.is-done {
+  pointer-events: none;
+}
+
+/* Фон из колонн: при уходе они по очереди уезжают вверх. Ширина колонны дробная, а каждая
+   рисуется своим слоем — на стыках при некоторых ширинах окна остаются щели в долю пикселя,
+   сквозь которые просвечивала страница. Подложка того же цвета закрывает их, пока экран
+   не начал уходить. */
+.pl2-columns {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  background: #0d0d0c;
+}
+
+.pl2.is-done .pl2-columns {
+  background: transparent;
+}
+
+.pl2-columns span {
+  background: #0d0d0c;
+  border-right: 1px solid rgba(242, 239, 232, 0.04);
+  transition: transform 0.9s cubic-bezier(0.76, 0, 0.24, 1);
+  transition-delay: calc(0.25s + var(--i) * 0.07s);
+  will-change: transform;
+}
+
+.pl2.is-done .pl2-columns span {
+  transform: translateY(-100%);
+}
+
+.pl2-frame {
+  position: relative;
+  height: 100%;
+  display: grid;
+  /* Середина может сжиматься: статус и проценты внизу остаются на экране при любой высоте. */
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  padding: clamp(16px, min(4vw, 5vh), 48px) clamp(20px, 4vw, 48px);
+  overflow: hidden;
+  transition: opacity 0.4s ease;
+}
+
+.pl2.is-done .pl2-frame {
+  opacity: 0;
+  transition-delay: 0.2s;
+}
+
+.pl2-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pl2-muted);
+  animation: pl2-fade 0.8s ease both;
+}
+
+.pl2-name {
+  position: relative;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4px, 1vw, 12px);
+}
+
+.pl2-surname {
+  margin: 0;
+  /* Кегль от меньшего из ширины и высоты окна: на низких экранах имя не вытесняет низ. */
+  font-size: clamp(36px, min(14vw, 20vh), 200px);
+  font-weight: 700;
+  line-height: 0.86;
+  letter-spacing: -0.055em;
+  text-transform: uppercase;
+}
+
+/* Буквы проявляются из размытия снизу и уходят вверх при готовности. */
+.pl2-surname span {
+  display: inline-block;
+  opacity: 0;
+  filter: blur(12px);
+  transform: translateY(30%);
+  animation: pl2-letter 1s cubic-bezier(0.16, 1, 0.3, 1) var(--d) forwards;
+  transition: transform 0.6s cubic-bezier(0.76, 0, 0.24, 1), opacity 0.4s ease;
+}
+
+.pl2.is-done .pl2-surname span {
+  transform: translateY(-60%);
+  opacity: 0;
+  transition-delay: calc(var(--d) * 0.4);
+}
+
+@keyframes pl2-letter {
+  to { opacity: 1; filter: blur(0); transform: translateY(0); }
+}
+
+.pl2-given {
+  margin: 0;
+  padding-left: 0.12em;
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(18px, min(4.6vw, 6.5vh), 64px);
+  line-height: 1;
+  color: var(--pl2-muted);
+  animation: pl2-fade 1s ease 0.6s both;
+}
+
+/* Тема диплома — под ФИО, по правому краю (на одной линии с «ВКР · год»), вне потока:
+   имя остаётся на своём месте. Ровно две строки: кегль уменьшается вместе с шириной
+   экрана, чтобы длинная строка (~37 em) всегда помещалась. */
+.pl2-thesis {
+  --pl2-pad: clamp(20px, 4vw, 48px);
+  position: absolute;
+  top: calc(100% + clamp(14px, 2.4vh, 28px));
+  right: 0;
+  margin: 0;
+  font-size: min(16px, calc((100vw - var(--pl2-pad) * 2) / 37));
+  font-weight: 300;
+  line-height: 1.55;
+  text-align: right;
+  color: var(--pl2-muted);
+  animation: pl2-fade 1s ease 0.8s both;
+}
+
+.pl2-thesis-line {
+  display: block;
+  white-space: nowrap;
+}
+
+.pl2-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  animation: pl2-fade 0.8s ease 0.4s both;
+}
+
+.pl2-status {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+  max-width: 420px;
+}
+
+.pl2-step {
+  font-family: 'JetBrains Mono', 'SF Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pl2-ink);
+  animation: pl2-step 0.45s ease both;
+}
+
+.pl2-step::before {
+  content: '— ';
+  color: var(--pl2-accent);
+}
+
+@keyframes pl2-step {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: none; }
+}
+
+.pl2-ticks {
+  display: flex;
+  gap: 3px;
+  height: 14px;
+}
+
+.pl2-ticks span {
+  flex: 1;
+  background: var(--pl2-line);
+  transform-origin: bottom;
+  transform: scaleY(0.45);
+  /* Цвет меняется сразу (перерисовка), анимируется только transform (композитинг). */
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.pl2-ticks span.is-on {
+  background: var(--pl2-accent);
+  transform: scaleY(1);
+}
+
+.pl2-counter {
+  display: flex;
+  align-items: flex-start;
+  font-size: clamp(40px, min(13vw, 18vh), 180px);
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Цифра — окно высотой в одну строку, в котором прокручивается столбик 0–9. */
+.pl2-digit {
+  display: inline-block;
+  height: 1em;
+  overflow: hidden;
+}
+
+.pl2-digit-strip {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: transform;
+}
+
+.pl2-digit-strip span {
+  height: 1em;
+}
+
+.pl2-percent {
+  margin-left: 0.08em;
+  font-size: 0.28em;
+  line-height: 1.4;
+  letter-spacing: 0;
+  color: var(--pl2-accent);
+}
+
+@keyframes pl2-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Планшеты: тема заметно ниже ФИО. */
+@media (max-width: 1100px) {
+  .pl2-thesis {
+    top: calc(100% + clamp(32px, 6vh, 56px));
+  }
+}
+
+@media (max-width: 640px) {
+  /* На телефоне две строки были бы слишком мелкими — текст переносится свободно,
+     строки выровнены по длине, тонкая линия справа связывает его с «ВКР · год». */
+  .pl2-thesis {
+    top: calc(100% + clamp(28px, 5vh, 44px));
+    left: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    text-wrap: balance;
+    padding-right: 12px;
+    border-right: 1px solid var(--pl2-line);
+  }
+
+  .pl2-thesis-line {
+    display: inline;
+    white-space: normal;
+  }
+
+  .pl2-bottom {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .pl2-counter {
+    align-self: flex-end;
+  }
+}
+
+/* Программный рендеринг (VDI): filter: blur на крупных буквах перерисовывается на CPU
+   каждый кадр — заменяем на чистые opacity/transform, лишние переходы убираем. */
+.pl2.is-lite .pl2-surname span {
+  filter: none;
+  animation-name: pl2-letter-lite;
+}
+
+@keyframes pl2-letter-lite {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pl2.is-lite .pl2-ticks span {
+  transition: none;
+}
+
+.pl2.is-lite .pl2-digit-strip {
+  transition-duration: 0.3s;
+}
+
+/* Невысокий экран (ноутбук с панелями браузера, телефон боком): тема под ФИО вынесена
+   из потока и наехала бы на статус загрузки — убираем её, имя остаётся. */
+@media (max-height: 560px) {
+  .pl2-thesis {
+    display: none;
+  }
+  .pl2-status {
+    gap: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pl2-surname span,
+  .pl2-given,
+  .pl2-thesis,
+  .pl2-top,
+  .pl2-bottom,
+  .pl2-step {
+    animation: none;
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+
+  .pl2-columns span,
+  .pl2-digit-strip {
+    transition: none;
+  }
+
+  .pl2.is-done .pl2-columns span {
+    transform: none;
+    opacity: 0;
+  }
+}

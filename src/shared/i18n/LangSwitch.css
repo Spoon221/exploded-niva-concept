@@ -1,0 +1,96 @@
+/* Вкладка правой колонки: прилегает к краю, как точки слайдов, «Управление» и «Сеть»,
+   и стоит в той же стопке — над «Управлением» через --rail-gap. Языки друг под другом
+   через черту, как счётчик «01 / 08». z-index ниже открытой панели управления (50),
+   чтобы она перекрывала вкладку, а не наоборот. */
+.lang-switch {
+  --lang-tab-h: 58px;
+  position: fixed;
+  top: max(.5rem, calc(50% - var(--rail-nav-h) / 2 - var(--rail-gap) * 2 - var(--rail-tab) - var(--lang-tab-h)));
+  right: 0;
+  z-index: 40;
+  width: 40px;
+  height: var(--lang-tab-h);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px 0 0 12px;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  animation: hudSlideRight .5s var(--ease-out-expo) .3s both;
+}
+
+.lang-switch-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lang-switch-sep {
+  width: 10px;
+  height: 1px;
+  margin: .1rem 0;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.lang-switch-btn {
+  padding: .3rem .4rem;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.35);
+  font-family: var(--font-mono);
+  font-size: .62rem;
+  line-height: 1;
+  letter-spacing: .04em;
+  cursor: pointer;
+  transition: color .3s;
+}
+
+.lang-switch-btn.active {
+  color: var(--lang-accent);
+  font-size: .72rem;
+  font-weight: 700;
+  cursor: default;
+}
+
+.lang-switch-btn:focus-visible {
+  outline: 1px solid var(--lang-accent);
+}
+
+@media (hover: hover) {
+  .lang-switch-btn:not(.active):hover {
+    color: rgba(255, 255, 255, 0.8);
+  }
+}
+
+/* На телефоне — вкладка, свисающая с верхнего края, как «Управление» и «Сеть». */
+@media (max-width: 768px) {
+  .lang-switch {
+    top: 0;
+    left: 0.85rem;
+    right: auto;
+    z-index: 100;
+    width: auto;
+    height: calc(var(--m-tab-h, 34px) + env(safe-area-inset-top, 0px));
+    flex-direction: row;
+    padding: env(safe-area-inset-top, 0px) .45rem 0;
+    border-radius: 0 0 10px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: none;
+    background: rgba(15, 23, 42, 0.8);
+    box-shadow: none;
+    animation: none;
+  }
+  .lang-switch-item { flex-direction: row; }
+  .lang-switch-sep {
+    width: 1px;
+    height: 10px;
+    margin: 0 .15rem;
+  }
+}

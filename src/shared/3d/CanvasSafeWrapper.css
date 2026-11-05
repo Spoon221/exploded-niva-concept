@@ -1,0 +1,86 @@
+/* Заглушки и уведомления защитной обёртки 3D-холста. */
+
+.canvas-notice {
+  position: absolute;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: #020617;
+  color: #f8fafc;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  text-align: center;
+}
+
+.canvas-notice-card {
+  max-width: 480px;
+  padding: 1.5rem 2rem;
+}
+
+.canvas-notice--error .canvas-notice-card {
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  border-radius: 16px;
+  background: rgba(15, 23, 42, 0.95);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.75), 0 0 30px rgba(239, 68, 68, 0.15);
+}
+
+.canvas-notice-icon {
+  margin-bottom: 0.75rem;
+  font-size: 1.75rem;
+}
+
+.canvas-notice-title {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.canvas-notice-text {
+  color: rgba(226, 232, 240, 0.75);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.canvas-notice-button {
+  margin-top: 1.25rem;
+  padding: 0.6rem 1.4rem;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  border-radius: 9999px;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.canvas-notice-button:hover {
+  background: rgba(56, 189, 248, 0.25);
+}
+
+.canvas-safe-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.canvas-context-toast {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  z-index: 99999;
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.92);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  color: #38bdf8;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 0.7rem;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
