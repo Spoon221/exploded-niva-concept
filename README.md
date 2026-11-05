@@ -48,6 +48,11 @@ npm run build
 
 Credits and licence notes for bundled third-party assets are in [ASSETS.md](./ASSETS.md).
 
+## Licence
+
+The source code is available under the [MIT License](./LICENSE). Third-party assets retain
+their own terms; see [ASSETS.md](./ASSETS.md).
+
 ## Author
 
 Created by [Evgenii Simakov](https://simakov.space/).
